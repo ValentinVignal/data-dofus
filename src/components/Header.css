@@ -1,0 +1,22 @@
+.header {
+  background-color: #203040;
+  display: flex;
+  top: 0;
+  z-index: 100;
+  position: sticky;
+  align-items: center;
+}
+
+.header__logo {
+  margin: 18px 20px 0px 20px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.header__title {
+  color: white;
+}
+
+.header__link {
+  text-decoration: none;
+}
