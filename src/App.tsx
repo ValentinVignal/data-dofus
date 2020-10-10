@@ -1,6 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Footer from "./components/Footer";
 import Header from "./components/Header";
+import Home from "./components/Home";
 
 function App() {
   return (
@@ -9,7 +11,8 @@ function App() {
         <Switch>
           <Route path="/">
             <Header />
-            <h1>Data Dofus</h1>
+            <Home />
+            <Footer />
           </Route>
         </Switch>
       </div>
