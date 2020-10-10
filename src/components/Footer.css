@@ -1,0 +1,16 @@
+.footer {
+  display: flex;
+  background-color: #203040;
+  color: white;
+}
+
+.footer__ourTeam {
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer__ourTeam__member {
+  color: lightgrey;
+  margin: 2px 0 2px 10px;
+}
