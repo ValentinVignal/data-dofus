@@ -1,0 +1,8 @@
+.ourTeam {
+  height: 80vh;
+  margin: 50px;
+}
+
+.ourTeam > p {
+  margin-left: 20px;
+}

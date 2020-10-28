@@ -8,6 +8,11 @@
   margin: 20px;
   display: flex;
   flex-direction: column;
+  color: white;
+}
+
+.footer__link {
+  text-decoration: none;
 }
 
 .footer__ourTeam__member {

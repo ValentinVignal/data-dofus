@@ -6,6 +6,7 @@ import Favicon from "react-favicon";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Home from "./components/Home";
+import OurTeam from "./components/OurTeam";
 
 function App() {
   return (
@@ -23,13 +24,16 @@ function App() {
       </Helmet>
       <Router>
         <div className="App">
+          <Header />
           <Switch>
+            <Route path="/our-team">
+              <OurTeam/>
+            </Route>
             <Route path="/">
-              <Header />
               <Home />
-              <Footer />
             </Route>
           </Switch>
+          <Footer />
         </div>
       </Router>
     </div>

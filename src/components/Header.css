@@ -2,6 +2,7 @@
   background-color: #203040;
   display: flex;
   top: 0;
+  left: 0;
   z-index: 100;
   position: sticky;
   align-items: center;

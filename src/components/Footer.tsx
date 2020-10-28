@@ -1,16 +1,15 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./Footer.css";
 
 export default function Footer() {
   return (
     <nav className="footer">
-      <div className="footer__ourTeam">
-        <h1>Our Team</h1>
-        <span className="footer__ourTeam__member">Couyoupetrou Julien</span>
-        <span className="footer__ourTeam__member">Deleuze Antoine</span>
-        <span className="footer__ourTeam__member">Deleuze Thibault</span>
-        <span className="footer__ourTeam__member">Vignal Valentin</span>
-      </div>
+      <Link to='/our-team' className="footer__link">
+        <div className="footer__ourTeam">
+          <h3>Our Team</h3>
+        </div>
+      </Link>
     </nav>
   );
 }
