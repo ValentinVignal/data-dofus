@@ -24,6 +24,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "rsuite": "^4.8.4",
+    "ts-transformer-keys": "^0.4.2",
     "typescript": "^3.9.7"
   },
   "scripts": {
