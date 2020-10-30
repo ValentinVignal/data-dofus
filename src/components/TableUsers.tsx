@@ -4,13 +4,14 @@ import * as interfaces from '../interfaces';
 import { Dropdown, DropdownButton, Table } from 'react-bootstrap';
 import UserRow from './UserRow';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './TableUsers.css';
 
 
 function TableUsers() {
 
     const [users, setUsers] = useState([] as interfaces.User[]);
-    const [orderBy, setOrderBy] = useState('level');
-    const [orderByDirection, setOrderByDirection] = useState('desc');
+    const [orderBy, setOrderBy] = useState({key: 'level', order: 'desc'} as interfaces.OrderBy);
+
 
 
     useEffect(function() {
@@ -18,7 +19,7 @@ function TableUsers() {
     });
 
     async function onUseEffect() {
-        const querySnapshot = await db.collection('users').orderBy(orderBy, orderByDirection as "asc"|"desc").limit(20).get();
+        const querySnapshot = await db.collection('users').orderBy(orderBy.key, orderBy.order).limit(20).get();
         console.log('docs', querySnapshot.docs.length);
         setUsers(querySnapshot.docs.map(function(documentSnapshot) {
             const user = documentSnapshot.data() as interfaces.User;
@@ -33,57 +34,74 @@ function TableUsers() {
 
             </div>
             <div className="table__orderBy">
+                <div className="tab__dropdown">
                 <DropdownButton
+                    className='table__orderBy__button'
                     key='orderBy'
                     id='dropdown-order-by'
                     variant='secondary'
-                    title={`Order By: ${orderBy}`}
+                    title={`Order By: ${interfaces.UserFields[orderBy.key as keyof interfaces.User]}`}
                 >
-                    {['id', 'level', 'Chance_base', 'Chance_bonus', 'Chance_total'].map(function(key) {
+                    {Object.keys(interfaces.UserFields).map(function(key) {
                         return <Dropdown.Item
                             eventKey={key}
                             onSelect={function(eventKey, _){
-                                setOrderBy(eventKey as string);
+                                if (eventKey) {
+                                    orderBy.key = eventKey;
+                                    setOrderBy(orderBy);
+                                }
                             }}
                         >
-                            {key}
+                            {interfaces.UserFields[key as keyof interfaces.User]}
                         </Dropdown.Item>;
                     })}
                 </DropdownButton>
+
+                </div>
+                <div className="tab__dropdown">
+                </div>
                 <DropdownButton
+                    className='table__orderBy__button'
                     key='orderByDirection'
                     id='dropdown-order-by-direction'
                     variant='secondary'
-                    title={orderByDirection}
+                    title={interfaces.OrderByOptions[orderBy.order]}
                 >
-                    {['desc', 'asc'].map(function(key) {
+                    {Object.keys(interfaces.OrderByOptions).map(function(key) {
                         return <Dropdown.Item
                             eventKey={key}
-                            onSelect={(eventKey, _) => setOrderByDirection(eventKey as string)}
+                            onSelect={function(eventKey, _){
+                                if (eventKey) {
+                                    orderBy.order = eventKey as interfaces.OrderBy['order'];
+                                    setOrderBy(orderBy);
+                                }
+                            }}
                         >
-                            {key}
+                            {interfaces.OrderByOptions[key as keyof interfaces.OrderByOptionsInterface]}
                         </Dropdown.Item>;
                     })}
                 </DropdownButton>
 
             </div>
-            <Table striped bordered hover size="sm" variant="dark">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Id</th>
-                        <th>Level</th>
-                        <th>Chance Base</th>
-                        <th>Chance Bonus</th>
-                        <th>Chance Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {users?.map(function(user, index) {
-                        return <UserRow index={index} user={user}/>
-                    })}
-                </tbody>
-            </Table>
+            <div className="table__values">
+                <Table striped bordered hover size="sm" variant="dark">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Id</th>
+                            <th>Level</th>
+                            <th>Chance Base</th>
+                            <th>Chance Bonus</th>
+                            <th>Chance Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {users?.map(function(user, index) {
+                            return <UserRow index={index} user={user}/>
+                        })}
+                    </tbody>
+                </Table>
+            </div>
         </div>
     )
 }
