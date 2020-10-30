@@ -1,0 +1,14 @@
+.table__orderBy {
+  display: flex;
+  flex-direction: row;
+}
+
+.table__orderBy__button {
+  margin: 0px 10px;
+}
+
+.table__values {
+  width: 100%;
+  margin: 20px 0px;
+  display: table;
+}
