@@ -6,32 +6,52 @@ import UserRow from './UserRow';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './TableUsers.css';
 import firebase  from 'firebase';
-import { isTypeOnlyImportOrExportDeclaration } from 'typescript';
+import cloneDeep from 'lodash/cloneDeep';
 
+interface TableUserInterface {
+    users: interfaces.User[],
+    orderBy: interfaces.OrderBy,
+    filters: interfaces.Filter[]
+    shouldQuery: boolean,
+};
 
 function TableUsers() {
 
-    const [users, setUsers] = useState([] as interfaces.User[]);
-    const [orderBy, setOrderBy] = useState({key: 'level', order: 'desc'} as interfaces.OrderBy);
-    const [filters, setFilters] = useState([] as interfaces.Filter[]);
-    console.log('filters', filters);
-    if (filters.length) {
-        const filter = filters[0];
-        console.log(filter.key, filter.operation, filter.value, typeof(filter.value));
-    }
+    const [tableUsersState, setTableUsersState] = useState({
+        users: [],
+        orderBy: {
+            key: 'level',
+            order: 'desc',
+        },
+        filters: [],
+        shouldQuery: true,
+    } as TableUserInterface)
+
     useEffect(function() {
+        console.log('in useEffect');
         onUseEffect();
     });
+    console.log('builder', tableUsersState.shouldQuery);
+    console.log(tableUsersState.users);
 
     function addFilter() {
+        const filters = cloneDeep(tableUsersState.filters);
         filters.push({} as interfaces.Filter);
-        setFilters(filters);
+        setTableUsersState({
+            ...tableUsersState,
+            filters,
+        });
     }
 
     async function onUseEffect() {
+        console.log('very start onUseEffect');
+        if (!tableUsersState.shouldQuery) {
+            return;
+        }
+        console.log('start onUseEffect');
         let collectionReference = await db.collection('users');
-        collectionReference = filters.reduce<firebase.firestore.CollectionReference<firebase.firestore.DocumentData>>(function(accumulator: firebase.firestore.CollectionReference<firebase.firestore.DocumentData>, filter) {
-            if (filter.key && filter.operation && filter.value) {
+        collectionReference = tableUsersState.filters.reduce<firebase.firestore.CollectionReference<firebase.firestore.DocumentData>>(function(accumulator: firebase.firestore.CollectionReference<firebase.firestore.DocumentData>, filter) {
+            if (!!(filter.key && filter.operation && filter.value)) {
                 let value = filter.value as string|number;
                 try {
                     value = parseInt(value as string);
@@ -43,13 +63,17 @@ function TableUsers() {
                 return accumulator;
             }
         }, collectionReference) as firebase.firestore.CollectionReference<firebase.firestore.DocumentData>;
-        const querySnapshot = await collectionReference.orderBy(orderBy.key, orderBy.order).limit(20).get();
-        console.log('docs', querySnapshot.docs.length);
-        setUsers(querySnapshot.docs.map(function(documentSnapshot) {
+        const querySnapshot = await collectionReference.orderBy(tableUsersState.orderBy.key, tableUsersState.orderBy.order).limit(20).get();
+        const users = querySnapshot.docs.map(function(documentSnapshot) {
             const user = documentSnapshot.data() as interfaces.User;
             user.id = documentSnapshot.id;
             return user;
-        }));
+        });
+        setTableUsersState({
+            ...tableUsersState,
+            users,
+            shouldQuery: false,
+        });
     }
     
     return (
@@ -61,7 +85,7 @@ function TableUsers() {
                 <Button variant='secondary' onClick={addFilter}>
                     +
                 </Button>
-                {filters.map(function(filter, index) {
+                {tableUsersState.filters.map(function(filter, index) {
                     return <InputGroup key={index}>
                         <DropdownButton
                             className='table__filter__key__button'
@@ -74,8 +98,18 @@ function TableUsers() {
                                 return <Dropdown.Item
                                     eventKey={key}
                                     onSelect={function(eventKey, _){
-                                        filters[index].key = eventKey;
-                                        setFilters(filters);
+                                        const updatedFilter = {
+                                            ...filter,
+                                            key: eventKey,
+                                        };
+                                        const filters = cloneDeep(tableUsersState.filters);
+                                        filters[index] = updatedFilter;
+                                        const shouldQuery = !!(updatedFilter.key && updatedFilter.operation && updatedFilter.value)
+                                        setTableUsersState({
+                                            ...tableUsersState,
+                                            shouldQuery,
+                                            filters,
+                                        });
                                     }}
                                 >
                                     {interfaces.UserFields[key as keyof interfaces.User]}
@@ -94,8 +128,18 @@ function TableUsers() {
                                 return <Dropdown.Item
                                     eventKey={operation}
                                     onSelect={function(eventKey, _){
-                                        filters[index].operation = operation as interfaces.Filter['operation'];
-                                        setFilters(filters);
+                                        const updatedFilter = {
+                                            ...filter,
+                                            operation: eventKey as interfaces.Filter['operation'],
+                                        };
+                                        const filters = cloneDeep(tableUsersState.filters);
+                                        filters[index] = updatedFilter;
+                                        const shouldQuery = !!(updatedFilter.key && updatedFilter.operation && updatedFilter.value)
+                                        setTableUsersState({
+                                            ...tableUsersState,
+                                            shouldQuery,
+                                            filters,
+                                        });
                                     }}
                                 >
                                     {operation}
@@ -104,10 +148,32 @@ function TableUsers() {
                         </DropdownButton>
 
                         <FormControl
+                            size='sm'
                             placeholder='Value'
                             onChange={function(event) {
-                                filters[index].value = event.target.value;
-                                setFilters(filters);
+                                console.log('event', event, event.target.value);
+                                if(event.target.value === '' || event.target.value) {
+                                    const updatedFilter = {
+                                        ...filter,
+                                        value: event.target.value,
+                                    };
+                                    const filters = cloneDeep(tableUsersState.filters);
+                                    filters[index] = updatedFilter;
+                                    setTableUsersState({
+                                        ...tableUsersState,
+                                        filters,
+                                    });
+                                }
+                            }}
+                            onKeyPress={function(event: React.KeyboardEvent<HTMLInputElement>) {
+                                if (event.key === 'Enter') {
+                                    const shouldQuery = !!(filter.key && filter.operation && filter.value)
+                                    console.log('shouldQuery', shouldQuery, filter);
+                                    setTableUsersState({
+                                        ...tableUsersState,
+                                        shouldQuery,
+                                    })
+                                }
                             }}
                         />
 
@@ -122,15 +188,21 @@ function TableUsers() {
                     key='orderBy'
                     id='dropdown-order-by'
                     variant='secondary'
-                    title={`Order By: ${interfaces.UserFields[orderBy.key as keyof interfaces.User]}`}
+                    title={`Order By: ${interfaces.UserFields[tableUsersState.orderBy.key as keyof interfaces.User]}`}
                 >
                     {Object.keys(interfaces.UserFields).map(function(key) {
                         return <Dropdown.Item
                             eventKey={key}
                             onSelect={function(eventKey, _){
                                 if (eventKey) {
-                                    orderBy.key = eventKey;
-                                    setOrderBy(orderBy);
+                                    setTableUsersState({
+                                        ...tableUsersState,
+                                        orderBy: {
+                                            ...tableUsersState.orderBy,
+                                            key: eventKey,
+                                        },
+                                        shouldQuery: true,
+                                    });
                                 }
                             }}
                         >
@@ -147,15 +219,21 @@ function TableUsers() {
                     key='orderByDirection'
                     id='dropdown-order-by-direction'
                     variant='secondary'
-                    title={interfaces.OrderByOptions[orderBy.order]}
+                    title={interfaces.OrderByOptions[tableUsersState.orderBy.order]}
                 >
                     {Object.keys(interfaces.OrderByOptions).map(function(key) {
                         return <Dropdown.Item
                             eventKey={key}
                             onSelect={function(eventKey, _){
                                 if (eventKey) {
-                                    orderBy.order = eventKey as interfaces.OrderBy['order'];
-                                    setOrderBy(orderBy);
+                                    setTableUsersState({
+                                        ...tableUsersState,
+                                        orderBy: {
+                                            ...tableUsersState.orderBy,
+                                            order: eventKey as interfaces.OrderBy['order'],
+                                        },
+                                        shouldQuery: true,
+                                    });
                                 }
                             }}
                         >
@@ -178,7 +256,7 @@ function TableUsers() {
                         </tr>
                     </thead>
                     <tbody>
-                        {users?.map(function(user, index) {
+                        {tableUsersState.users?.map(function(user, index) {
                             return <UserRow index={index} user={user}/>
                         })}
                     </tbody>
