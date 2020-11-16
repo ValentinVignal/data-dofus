@@ -176,6 +176,21 @@ function TableUsers() {
                                 }
                             }}
                         />
+                        <Button
+                            variant='danger'
+                            onClick={function() {
+                                const filters = cloneDeep(tableUsersState.filters);
+                                filters.splice(index, 1);   // Remove the filter;
+                                const shouldQuery = !!(filter.key && filter.operation && filter.value);
+                                setTableUsersState({
+                                    ...tableUsersState,
+                                    shouldQuery,
+                                    filters,
+                                });
+                            }}
+                        >
+                            x
+                        </Button>
 
 
                     </InputGroup>
