@@ -7,6 +7,7 @@ import firebase from 'firebase';
 import { useStateValue } from '../services/StateProvider';
 import Filters from './Filters/Filters';
 import TableUsersContent from './TableUsersContent';
+import OrderBy from './OrderBy';
 
 
 function TableUsers() {
@@ -48,6 +49,7 @@ function TableUsers() {
             user.id = documentSnapshot.id;
             return user;
         });
+        console.log('users in useEffect', users);
         setTableUsersState({
             ...tableUsersState,
             users,
@@ -55,13 +57,15 @@ function TableUsers() {
         });
     }
 
+
+
     return (
         <div className='table'>
             <div className="table__filter">
                 <Filters />
             </div>
             <div className="table__orderBy">
-
+                <OrderBy />
             </div>
             <div className="table__content">
                 <TableUsersContent />

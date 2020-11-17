@@ -1,4 +1,5 @@
 import * as interfaces from '../interfaces';
+import cloneDeep from 'lodash/cloneDeep';
 
 export interface TableUsersState {
     users: interfaces.User[],
@@ -16,6 +17,6 @@ export const initialState = {
     shouldQuery: true,
 } as TableUsersState;
 
-export default function reducer(state: TableUsersState = initialState, action: any): TableUsersState {
-    return state;
+export default function reducer(state: TableUsersState = initialState, newState: TableUsersState): TableUsersState {
+    return newState;
 }
