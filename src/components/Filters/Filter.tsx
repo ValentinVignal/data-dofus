@@ -3,6 +3,8 @@ import { useStateValue } from '../../services/StateProvider';
 import cloneDeep from 'lodash/cloneDeep';
 import { Button, Dropdown, DropdownButton, FormControl, InputGroup } from 'react-bootstrap';
 import * as interfaces from '../../interfaces';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './Filter.scss';
 
 interface FilterProps {
     index: number,
@@ -14,12 +16,13 @@ function Filter(props: FilterProps) {
     const filter = tableUsersState.filters[index];
     return (
         <div className='filter'>
-            <InputGroup key={index}>
+            <InputGroup key={index} className='mb-3'>
                 <DropdownButton
-                    className='table__filter__key__button'
+                    as={InputGroup.Prepend}
+                    className='filter_label'
                     key='filterKey'
                     id='dropdown-filter-key'
-                    variant='secondary'
+                    variant='outline-secondary'
                     title={`Filter by: ${filter.key ? interfaces.UserFields[filter.key as keyof interfaces.User] : ''}`}
                 >
                     {Object.keys(interfaces.UserFields).map(function (key) {
@@ -46,10 +49,11 @@ function Filter(props: FilterProps) {
                 </DropdownButton>
 
                 <DropdownButton
+                    as={InputGroup.Prepend}
                     className='table__filter__operation__button'
                     key='orderBy'
                     id='dropdown-order-by'
-                    variant='secondary'
+                    variant='outline-secondary'
                     title={`${filter.operation ? filter.operation : ''}`}
                 >
                     {interfaces.WhereFilterOperation.map(function (operation) {
@@ -76,7 +80,8 @@ function Filter(props: FilterProps) {
                 </DropdownButton>
 
                 <FormControl
-                    size='sm'
+                    // size='sm'
+                    aria-describedby="basic-addon2"
                     placeholder='Value'
                     onChange={function (event) {
                         console.log('event', event, event.target.value);
@@ -104,21 +109,23 @@ function Filter(props: FilterProps) {
                         }
                     }}
                 />
-                <Button
-                    variant='danger'
-                    onClick={function () {
-                        const filters = cloneDeep(tableUsersState.filters);
-                        filters.splice(index, 1);   // Remove the filter;
-                        const shouldQuery = !!(filter.key && filter.operation && filter.value);
-                        setTableUsersState({
-                            ...tableUsersState,
-                            shouldQuery,
-                            filters,
-                        });
-                    }}
-                >
-                    x
-                        </Button>
+                <InputGroup.Append>
+                    <Button
+                        variant='outline-danger'
+                        onClick={function () {
+                            const filters = cloneDeep(tableUsersState.filters);
+                            filters.splice(index, 1);   // Remove the filter;
+                            const shouldQuery = !!(filter.key && filter.operation && filter.value);
+                            setTableUsersState({
+                                ...tableUsersState,
+                                shouldQuery,
+                                filters,
+                            });
+                        }}
+                    >
+                        x
+                    </Button>
+                </InputGroup.Append>
 
 
             </InputGroup>

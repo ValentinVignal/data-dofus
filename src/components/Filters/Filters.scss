@@ -1,0 +1,15 @@
+.filters__addButton {
+  margin-bottom: 10px;
+  display: flex;
+}
+
+.filters__addButton > h3 {
+  margin-right: 20px;
+}
+
+.filters__filters {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}

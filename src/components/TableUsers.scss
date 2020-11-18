@@ -1,0 +1,18 @@
+$margin: 20px;
+
+.table {
+  margin: $margin;
+}
+
+.table__options {
+  margin: $margin;
+}
+
+.table__filters {
+  margin: $margin;
+  border-bottom: 1px solid lightgray;
+}
+
+.table__orderBy {
+  margin: $margin;
+}

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { db } from '../firebase';
 import * as interfaces from '../interfaces';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './TableUsers.css';
+import './TableUsers.scss';
 import firebase from 'firebase';
 import { useStateValue } from '../services/StateProvider';
 import Filters from './Filters/Filters';
@@ -61,11 +61,13 @@ function TableUsers() {
 
     return (
         <div className='table'>
-            <div className="table__filter">
-                <Filters />
-            </div>
-            <div className="table__orderBy">
-                <OrderBy />
+            <div className="table__options">
+                <div className="table__filters">
+                    <Filters />
+                </div>
+                <div className="table__orderBy">
+                    <OrderBy />
+                </div>
             </div>
             <div className="table__content">
                 <TableUsersContent />
