@@ -1,5 +1,5 @@
 import React from 'react'
-import './OurTeam.css';
+import './OurTeam.scss';
 
 function OurTeam() {
     return (

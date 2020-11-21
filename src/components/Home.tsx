@@ -1,5 +1,5 @@
 import React from "react";
-import "./Home.css";
+import "./Home.scss";
 import TableUsers from "./TableUsers";
 
 export default function Home() {
@@ -12,7 +12,7 @@ export default function Home() {
         different servers. The goal is to display custom ranking from their
         stats.
       </p>
-      <TableUsers/>
+      <TableUsers />
     </div>
   );
 }
